@@ -1,6 +1,8 @@
-var express = require("express");
-var router = express.Router();
-
+const nodemailer = require("nodemailer"),
+    express = require("express"),
+    router = express.Router(),
+    config = require("../config"),
+    transporter = nodemailer.createTransport(config.mailer);
 /* GET home page. */
 router.get("/", function(req, res, next) {
     res.render("index", { title: "Express" });
@@ -27,8 +29,19 @@ router
                 errorMessages: errors
             });
         }
-
-        res.render("thank", { title: "post of contact" });
+        //todo : if no errors are found
+        var mailOptions = {
+            from: "chetan jain <no-reply@gmail.com>",
+            to: "dangerxkills@gmail.com",
+            subject: "you got a new message from visitor",
+            text: req.body.message
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log("error in sending mail : ", error);
+            }
+            res.render("thank", { title: "post of contact" });
+        });
     });
 
 module.exports = router;
