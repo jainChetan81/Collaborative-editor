@@ -9,6 +9,12 @@ router.get("/", function(req, res, next) {
 router.get("/about", (req, res, next) => {
     res.render("about", { title: "abou page of codeshare" });
 });
+router.get("/login", (req, res, next) => {
+    res.render("login", { title: "login page of codeshare" });
+});
+router.get("/register", (req, res, next) => {
+    res.render("register", { title: "register page of codeshare" });
+});
 router
     .route("/contact")
     .get((req, res, next) => {
