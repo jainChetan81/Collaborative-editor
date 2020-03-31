@@ -15,14 +15,18 @@ passport.use(
             usernameField: "email"
         },
         (username, password, done) => {
+            console.log("useername :", username, password);
             User.findOne({ email: username }, (err, user) => {
+                console.log("user : ", user);
                 if (err) return done(err);
                 if (!user) {
+                    console.log("Incorrrect Username");
                     return done(null, false, {
-                        message: "Incorrrect Username"
+                        message: "Incorrrect Username or password"
                     });
                 }
-                if (!user.validPassword(password)) {
+                if (password !== user.password) {
+                    console.log("incorrect password");
                     return done(null, false, {
                         message: "incorrect password"
                     });

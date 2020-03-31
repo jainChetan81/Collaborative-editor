@@ -38,10 +38,11 @@ router
             var user = new User();
             user.name = req.body.name;
             user.email = req.body.email;
-            user.setPassword(req.body.password);
+            // user.setPassword(req.body.password);
             // let obj = user.setPassword(req.body.password);
             // user.salt = obj.salt;
             // user.hash = obj.hash;
+            user.password = req.body.password;
             console.log("user in register:", user);
             user.save(err => {
                 if (err) {
