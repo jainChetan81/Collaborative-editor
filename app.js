@@ -36,6 +36,12 @@ app.use(
         cookie: { secure: true }
     })
 );
+app.use((req, res, next) => {
+    if (req.isAuthenticated()) {
+        res.locals.user = req.user;
+    }
+    next();
+});
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRoute);

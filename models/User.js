@@ -7,12 +7,12 @@ var userSchema = mongoose.Schema({
         required: true
     },
     hash: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
     salt: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     }
 });
 userSchema.methods.setPassword = password => {
@@ -30,6 +30,6 @@ userSchema.methods.validPassword = password => {
     var hash = crypto
         .pbkdf2Sync(password, this.salt, 1000, 64, "sha1")
         .toString("hex");
-    return (this.hash = hash);
+    return this.hash === hash;
 };
 module.exports = mongoose.model("User", userSchema);

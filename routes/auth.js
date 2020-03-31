@@ -1,10 +1,20 @@
 const express = require("express"),
     router = express.Router(),
-    passport = require("passport"),
-    config = require("../config");
-router.get("/login", (req, res, next) => {
-    res.render("login", { title: "login page of codeshare" });
-});
+    passport = require("passport");
+router
+    .route("/login")
+    .get((req, res, next) => {
+        res.render("login", { title: "login page of codeshare" });
+    })
+    .post(
+        passport.authenticate("local", {
+            failureRedirect: "/login"
+        }),
+        (req, res) => {
+            res.redirect("/");
+        }
+    );
+
 router
     .route("/register")
     .get((req, res, next) => {
@@ -28,9 +38,10 @@ router
             var user = new User();
             user.name = req.body.name;
             user.email = req.body.email;
-            let obj = user.setPassword(req.body.password);
-            user.salt = obj.salt;
-            user.hash = obj.hash;
+            user.setPassword(req.body.password);
+            // let obj = user.setPassword(req.body.password);
+            // user.salt = obj.salt;
+            // user.hash = obj.hash;
             console.log("user in register:", user);
             user.save(err => {
                 if (err) {
