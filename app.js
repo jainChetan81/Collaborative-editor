@@ -1,15 +1,23 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-const expressValidator = require("express-validator");
-
-var indexRouter = require("./routes/index");
-
-var app = express();
+const mongoose = require("mongoose"),
+    createError = require("http-errors"),
+    express = require("express"),
+    path = require("path"),
+    cookieParser = require("cookie-parser"),
+    logger = require("morgan"),
+    config = require("./config"),
+    expressValidator = require("express-validator"),
+    indexRoute = require("./routes/index"),
+    authRoute = require("./routes/auth"),
+    passport = require("passport"),
+    session = require("express-session"),
+    app = express();
+require("./passport");
 
 // view engine setup
+mongoose.connect(config.dbMlab, () => {
+    console.log("mongodb is connected");
+});
+global.User = require("./models/User");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 
@@ -18,9 +26,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(
+    session({
+        secret: config.sessionKey,
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: true }
+    })
+);
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
+app.use("/", indexRoute);
+app.use("/", authRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -9,12 +9,6 @@ router.get("/", function(req, res, next) {
 router.get("/about", (req, res, next) => {
     res.render("about", { title: "abou page of codeshare" });
 });
-router.get("/login", (req, res, next) => {
-    res.render("login", { title: "login page of codeshare" });
-});
-router.get("/register", (req, res, next) => {
-    res.render("register", { title: "register page of codeshare" });
-});
 router
     .route("/contact")
     .get((req, res, next) => {
@@ -35,7 +29,7 @@ router
             });
         } else {
             var mailOptions = {
-                from: "chetan jain <no-reply@gmail.com>",
+                from: req.body.email,
                 to: "dangerxkills@gmail.com",
                 subject: "you got a new message from visitor",
                 text: req.body.message
