@@ -20,9 +20,9 @@ router
     .get((req, res, next) => {
         res.render("register", { title: "register your new account" });
     })
-    .post((req, res, nex) => {
+    .post((req, res, next) => {
         req.checkBody("name", "Empty Name").notEmpty();
-        req.checkBody("email", "Invalid Email").notEmpty();
+        req.checkBody("email", "Invalid Email").isEmail();
         req.checkBody("password", "Empty Password").notEmpty();
         req.checkBody("password", "Password do not match")
             .equals(req.body.confirmPassword)
@@ -38,12 +38,7 @@ router
             var user = new User();
             user.name = req.body.name;
             user.email = req.body.email;
-            // user.setPassword(req.body.password);
-            // let obj = user.setPassword(req.body.password);
-            // user.salt = obj.salt;
-            // user.hash = obj.hash;
-            user.password = req.body.password;
-            console.log("user in register:", user);
+            user.setPassword(req.body.password);
             user.save(err => {
                 if (err) {
                     console.log("err :", err);
@@ -59,7 +54,7 @@ router.get(
     passport.authenticate("facebook", { scope: "email" })
 );
 router.get(
-    "/auth/faceboook/callback",
+    "/auth/facebook/callback",
     passport.authenticate("facebook", {
         successRedirect: "/",
         failureRedirect: "/"

@@ -17,7 +17,7 @@ router
     })
     .post((req, res, next) => {
         req.checkBody("name", "Empty Name").notEmpty();
-        req.checkBody("email", "Invalid Email").notEmpty();
+        req.checkBody("email", "Invalid Email").isEmail();
         req.checkBody("message", "Empty Message").notEmpty();
         var errors = req.validationErrors();
         if (errors) {

@@ -1,18 +1,20 @@
-const passport = require("passport"),
+var passport = require("passport"),
     localStrategy = require("passport-local").Strategy,
     facebookStrategy = require("passport-facebook").Strategy,
     config = require("./config");
 
 passport.serializeUser((user, done) => {
-    console.log("serialize : ", user);
+    console.log("serialze : ", user.name);
     done(null, user._id);
 });
+
 passport.deserializeUser((id, done) => {
     User.findOne({ _id: id }, (err, user) => {
-        console.log("deserialize : ", user);
+        console.log("deserialze : ", user.name);
         done(err, user);
     });
 });
+
 passport.use(
     new localStrategy(
         {
@@ -20,18 +22,15 @@ passport.use(
         },
         (username, password, done) => {
             User.findOne({ email: username }, (err, user) => {
-                console.log("user : ", user);
                 if (err) return done(err);
                 if (!user) {
-                    console.log("Incorrrect Username");
                     return done(null, false, {
-                        message: "Incorrrect Username or password"
+                        message: "Incorrect username or password"
                     });
                 }
-                if (password !== user.password) {
-                    console.log("incorrect password");
+                if (!user.validPassword(password)) {
                     return done(null, false, {
-                        message: "incorrect password"
+                        message: "Incorrect username or password"
                     });
                 }
                 return done(null, user);
@@ -48,13 +47,12 @@ passport.use(
             profileFields: ["id", "displayName", "email"]
         },
         (token, refreshToken, profile, done) => {
+            console.log("profile is : ", profile.name);
             User.findOne({ facebookId: profile.id }, (err, user) => {
-                console.log("user : ", user);
+                console.log("user is :", user.name);
                 if (err) return done(err);
                 if (user) {
-                    return done(null, user, {
-                        message: "login complete"
-                    });
+                    return done(null, user);
                 } else {
                     User.findOne(
                         { email: profile.emails[0].value },
@@ -62,11 +60,11 @@ passport.use(
                             if (user) {
                                 user.facebookId = profile.id;
                                 return user.save(err => {
-                                    if (err) return;
-                                    done(
-                                        null,
-                                        false({ message: "Cant save user" })
-                                    );
+                                    console.log("error at facebook1: ", err);
+                                    if (err)
+                                        return done(null, false, {
+                                            message: "Can't save user info"
+                                        });
                                     return done(null, user);
                                 });
                             }
@@ -75,9 +73,10 @@ passport.use(
                             user.email = profile.emails[0].value;
                             user.facebookId = profile.id;
                             user.save(err => {
+                                console.log("error at facebook2 : ", err);
                                 if (err)
                                     return done(null, false, {
-                                        message: "Cant save the user model"
+                                        message: "Can't save user info"
                                     });
                                 return done(null, user);
                             });

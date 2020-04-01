@@ -1,33 +1,37 @@
-const mongoose = require("mongoose"),
-    createError = require("http-errors"),
-    express = require("express"),
+const express = require("express"),
     path = require("path"),
-    cookieParser = require("cookie-parser"),
+    favicon = require("serve-favicon"),
     logger = require("morgan"),
-    config = require("./config"),
+    cookieParser = require("cookie-parser"),
+    bodyParser = require("body-parser"),
     expressValidator = require("express-validator"),
-    indexRoute = require("./routes/index"),
-    authRoute = require("./routes/auth"),
+    mongoose = require("mongoose"),
     passport = require("passport"),
     session = require("express-session"),
+    indexRoute = require("./routes/index"),
+    authRoute = require("./routes/auth"),
+    taskRoute = require("./routes/task"),
+    config = require("./config"),
     app = express();
 require("./passport");
 
-// view engine setup
-mongoose.connect(config.dbMlab, () => {
+mongoose.connect(config.dbConnstring, () => {
     console.log("mongodb is connected");
 });
-global.User = require("./models/User");
+global.User = require("./models/user");
+global.Task = require("./models/Task");
+
+// view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(
     session({
         secret: config.sessionKey,
@@ -35,6 +39,9 @@ app.use(
         saveUninitialized: true
     })
 );
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(path.join(__dirname, "public")));
 app.use(function(req, res, next) {
     if (req.isAuthenticated()) {
         console.log("user on th app.js is : ", req.user);
@@ -42,14 +49,16 @@ app.use(function(req, res, next) {
     }
     next();
 });
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRoute);
 app.use("/", authRoute);
+app.use("/", taskRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    next(createError(404));
+    var err = new Error("Not Found");
+    err.status = 404;
+    next(err);
 });
 
 // error handler
