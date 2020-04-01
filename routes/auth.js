@@ -18,7 +18,7 @@ router
 router
     .route("/register")
     .get((req, res, next) => {
-        res.render("register", { title: "register page of codeshare" });
+        res.render("register", { title: "register your new account" });
     })
     .post((req, res, nex) => {
         req.checkBody("name", "Empty Name").notEmpty();
@@ -54,4 +54,19 @@ router
             });
         }
     });
+router.get(
+    "/auth/facebook",
+    passport.authenticate("facebook", { scope: "email" })
+);
+router.get(
+    "/auth/faceboook/callback",
+    passport.authenticate("facebook", {
+        successRedirect: "/",
+        failureRedirect: "/"
+    })
+);
+router.get("/logout", (req, res) => {
+    req.logout();
+    res.redirect("/");
+});
 module.exports = router;

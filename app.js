@@ -35,8 +35,9 @@ app.use(
         saveUninitialized: true
     })
 );
-app.use((req, res, next) => {
+app.use(function(req, res, next) {
     if (req.isAuthenticated()) {
+        console.log("user on th app.js is : ", req.user);
         res.locals.user = req.user;
     }
     next();

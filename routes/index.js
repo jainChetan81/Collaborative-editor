@@ -1,13 +1,14 @@
 const nodemailer = require("nodemailer"),
     express = require("express"),
     router = express.Router(),
-    config = require("../config");
+    config = require("../config"),
+    transporter = nodemailer.createTransport(config.mailer);
 /* GET home page. */
-router.get("/", function(req, res, next) {
-    res.render("index", { title: "Express" });
+router.get("/", (req, res, next) => {
+    res.render("index", { title: "Video Collaborator" });
 });
 router.get("/about", (req, res, next) => {
-    res.render("about", { title: "abou page of codeshare" });
+    res.render("about", { title: "about page of codeshare" });
 });
 router
     .route("/contact")
@@ -34,7 +35,6 @@ router
                 subject: "you got a new message from visitor",
                 text: req.body.message
             };
-            const transporter = nodemailer.createTransport(config.mailer);
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     return console.log("error in sending mail : ", error);

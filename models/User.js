@@ -9,7 +9,8 @@ var userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    facebookId: String
 });
 // userSchema.methods.setPassword = password => {
 //     this.salt = crypto.randomBytes(16).toString("hex");
