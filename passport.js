@@ -38,6 +38,7 @@ passport.use(
         }
     )
 );
+
 passport.use(
     new facebookStrategy(
         {
@@ -46,11 +47,10 @@ passport.use(
             callbackURL: "http://localhost:3000/auth/facebook/callback",
             profileFields: ["id", "displayName", "email"]
         },
-        (token, refreshToken, profile, done) => {
-            console.log("profile is : ", profile.name);
+        function(token, refreshToken, profile, done) {
             User.findOne({ facebookId: profile.id }, (err, user) => {
-                console.log("user is :", user.name);
                 if (err) return done(err);
+
                 if (user) {
                     return done(null, user);
                 } else {
@@ -60,7 +60,6 @@ passport.use(
                             if (user) {
                                 user.facebookId = profile.id;
                                 return user.save(err => {
-                                    console.log("error at facebook1: ", err);
                                     if (err)
                                         return done(null, false, {
                                             message: "Can't save user info"
@@ -68,12 +67,12 @@ passport.use(
                                     return done(null, user);
                                 });
                             }
+
                             var user = new User();
                             user.name = profile.displayName;
                             user.email = profile.emails[0].value;
-                            user.facebookId = profile.id;
+                            user.facebookId = profile.idea;
                             user.save(err => {
-                                console.log("error at facebook2 : ", err);
                                 if (err)
                                     return done(null, false, {
                                         message: "Can't save user info"

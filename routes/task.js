@@ -1,9 +1,10 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express"),
+    router = express.Router();
 
 router.get("/createTask", (req, res) => {
+    res.render("task");
     var newTask = new Task();
-    newTask.save(function(err, data) {
+    newTask.save((err, data) => {
         if (err) {
             console.log(err);
             res.render("error");
@@ -12,7 +13,6 @@ router.get("/createTask", (req, res) => {
         }
     });
 });
-
 router.get("/task/:id", (req, res) => {
     if (req.params.id) {
         Task.findOne({ _id: req.params.id }, (err, data) => {
@@ -30,5 +30,4 @@ router.get("/task/:id", (req, res) => {
         res.render("error");
     }
 });
-
 module.exports = router;

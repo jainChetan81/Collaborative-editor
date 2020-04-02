@@ -44,7 +44,7 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(function(req, res, next) {
     if (req.isAuthenticated()) {
-        console.log("user on th app.js is : ", req.user);
+        console.log("user on th app.js is : ", req.user.name);
         res.locals.user = req.user;
     }
     next();
