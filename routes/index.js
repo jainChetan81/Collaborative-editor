@@ -1,28 +1,35 @@
-const nodemailer = require("nodemailer"),
-    express = require("express"),
-    router = express.Router(),
-    config = require("../config"),
-    transporter = nodemailer.createTransport(config.mailer);
+var express = require("express");
+var router = express.Router();
+
+var nodemailer = require("nodemailer");
+var config = require("../config");
+var transporter = nodemailer.createTransport(config.mailer);
+
 /* GET home page. */
-router.get("/", (req, res, next) => {
-    res.render("index", { title: "Video Collaborator" });
+router.get("/", function(req, res, next) {
+    res.render("index", { title: "Code4Share - a platform for sharing code." });
 });
-router.get("/about", (req, res, next) => {
-    res.render("about", { title: "about page of codeshare" });
+
+router.get("/about", function(req, res, next) {
+    res.render("about", { title: "Code4Share - a platform for sharing code." });
 });
+
 router
     .route("/contact")
-    .get((req, res, next) => {
-        res.render("contact", { title: "contact page of codeshare" });
+    .get(function(req, res, next) {
+        res.render("contact", {
+            title: "Code4Share - a platform for sharing code."
+        });
     })
-    .post((req, res, next) => {
-        req.checkBody("name", "Empty Name").notEmpty();
-        req.checkBody("email", "Invalid Email").isEmail();
-        req.checkBody("message", "Empty Message").notEmpty();
+    .post(function(req, res, next) {
+        req.checkBody("name", "Empty name").notEmpty();
+        req.checkBody("email", "Invalid email").isEmail();
+        req.checkBody("message", "Empty message").notEmpty();
         var errors = req.validationErrors();
+
         if (errors) {
             res.render("contact", {
-                title: "contact page of codeshare",
+                title: "Code4Share - a platform for sharing code.",
                 name: req.body.name,
                 email: req.body.email,
                 message: req.body.message,
@@ -30,19 +37,21 @@ router
             });
         } else {
             var mailOptions = {
-                from: req.body.email,
+                from: "Code4Share <no-reply@code4share.com>",
                 to: "dangerxkills@gmail.com",
-                subject: "you got a new message from visitor",
+                subject: "You got a new message from visitor 💋 😽",
                 text: req.body.message
             };
-            transporter.sendMail(mailOptions, (error, info) => {
+
+            transporter.sendMail(mailOptions, function(error, info) {
                 if (error) {
-                    return console.log("error in sending mail : ", error);
+                    return console.log(error);
                 }
-                res.render("thank", { title: "post of contact" });
+                res.render("thank", {
+                    title: "Code4Share - a platform for sharing code."
+                });
             });
         }
-        //todo : if no errors are found
     });
 
 module.exports = router;

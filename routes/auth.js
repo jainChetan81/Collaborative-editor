@@ -1,32 +1,34 @@
-const express = require("express"),
-    router = express.Router(),
-    passport = require("passport");
+var express = require("express");
+var router = express.Router();
+var passport = require("passport");
+
 router
     .route("/login")
-    .get((req, res, next) => {
-        res.render("login", { title: "login page of codeshare" });
+    .get(function(req, res, next) {
+        res.render("login", { title: "Login your account" });
     })
     .post(
         passport.authenticate("local", {
             failureRedirect: "/login"
         }),
-        (req, res) => {
+        function(req, res) {
             res.redirect("/");
         }
     );
 
 router
     .route("/register")
-    .get((req, res, next) => {
-        res.render("register", { title: "register your new account" });
+    .get(function(req, res, next) {
+        res.render("register", { title: "Register a new account" });
     })
-    .post((req, res, next) => {
+    .post(function(req, res, next) {
         req.checkBody("name", "Empty Name").notEmpty();
         req.checkBody("email", "Invalid Email").isEmail();
         req.checkBody("password", "Empty Password").notEmpty();
         req.checkBody("password", "Password do not match")
             .equals(req.body.confirmPassword)
             .notEmpty();
+
         var errors = req.validationErrors();
         if (errors) {
             res.render("register", {
@@ -39,9 +41,8 @@ router
             user.name = req.body.name;
             user.email = req.body.email;
             user.setPassword(req.body.password);
-            user.save(err => {
+            user.save(function(err) {
                 if (err) {
-                    console.log("err :", err);
                     res.render("register", { errorMessages: err });
                 } else {
                     res.redirect("/login");
@@ -49,10 +50,17 @@ router
             });
         }
     });
+
+router.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/");
+});
+
 router.get(
     "/auth/facebook",
     passport.authenticate("facebook", { scope: "email" })
 );
+
 router.get(
     "/auth/facebook/callback",
     passport.authenticate("facebook", {
@@ -60,8 +68,5 @@ router.get(
         failureRedirect: "/"
     })
 );
-router.get("/logout", (req, res) => {
-    req.logout();
-    res.redirect("/");
-});
+
 module.exports = router;

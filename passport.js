@@ -1,27 +1,25 @@
-var passport = require("passport"),
-    localStrategy = require("passport-local").Strategy,
-    facebookStrategy = require("passport-facebook").Strategy,
-    config = require("./config");
+var passport = require("passport");
+var LocalStrategy = require("passport-local").Strategy;
+var FacebookStrategy = require("passport-facebook").Strategy;
+const config = require("./config");
 
-passport.serializeUser((user, done) => {
-    console.log("serialze : ", user.name);
+passport.serializeUser(function(user, done) {
     done(null, user._id);
 });
 
-passport.deserializeUser((id, done) => {
-    User.findOne({ _id: id }, (err, user) => {
-        console.log("deserialze : ", user.name);
+passport.deserializeUser(function(id, done) {
+    User.findOne({ _id: id }, function(err, user) {
         done(err, user);
     });
 });
 
 passport.use(
-    new localStrategy(
+    new LocalStrategy(
         {
             usernameField: "email"
         },
-        (username, password, done) => {
-            User.findOne({ email: username }, (err, user) => {
+        function(username, password, done) {
+            User.findOne({ email: username }, function(err, user) {
                 if (err) return done(err);
                 if (!user) {
                     return done(null, false, {
@@ -33,6 +31,7 @@ passport.use(
                         message: "Incorrect username or password"
                     });
                 }
+
                 return done(null, user);
             });
         }
@@ -40,7 +39,7 @@ passport.use(
 );
 
 passport.use(
-    new facebookStrategy(
+    new FacebookStrategy(
         {
             clientID: config.facebook.appId,
             clientSecret: config.facebook.appSecret,
@@ -48,31 +47,19 @@ passport.use(
             profileFields: ["id", "displayName", "email"]
         },
         function(token, refreshToken, profile, done) {
-            User.findOne({ facebookId: profile.id }, (err, user) => {
+            User.findOne({ facebookId: profile.id }, function(err, user) {
                 if (err) return done(err);
 
                 if (user) {
                     return done(null, user);
                 } else {
-                    User.findOne(
-                        { email: profile.emails[0].value },
-                        (err, user) => {
-                            if (user) {
-                                user.facebookId = profile.id;
-                                return user.save(err => {
-                                    if (err)
-                                        return done(null, false, {
-                                            message: "Can't save user info"
-                                        });
-                                    return done(null, user);
-                                });
-                            }
-
-                            var user = new User();
-                            user.name = profile.displayName;
-                            user.email = profile.emails[0].value;
-                            user.facebookId = profile.idea;
-                            user.save(err => {
+                    User.findOne({ email: profile.emails[0].value }, function(
+                        err,
+                        user
+                    ) {
+                        if (user) {
+                            user.facebookId = profile.id;
+                            return user.save(function(err) {
                                 if (err)
                                     return done(null, false, {
                                         message: "Can't save user info"
@@ -80,7 +67,19 @@ passport.use(
                                 return done(null, user);
                             });
                         }
-                    );
+
+                        var user = new User();
+                        user.name = profile.displayName;
+                        user.email = profile.emails[0].value;
+                        user.facebookId = profile.idea;
+                        user.save(function(err) {
+                            if (err)
+                                return done(null, false, {
+                                    message: "Can't save user info"
+                                });
+                            return done(null, user);
+                        });
+                    });
                 }
             });
         }

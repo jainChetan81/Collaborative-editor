@@ -17,9 +17,11 @@
         "morgan": "~1.7.0",
         "nodemailer": "^3.1.5",
         "nodemon": "^2.0.2",
+        "ot": "git+https://github.com/Operational-Transformation/ot.js.git",
         "passport": "^0.3.2",
         "passport-facebook": "^2.1.1",
         "passport-local": "^1.0.0",
-        "serve-favicon": "~2.3.2"
+        "serve-favicon": "~2.3.2",
+        "socket.io": "^1.7.3"
     }
 }

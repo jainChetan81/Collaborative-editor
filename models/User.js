@@ -1,19 +1,20 @@
-const mongoose = require("mongoose"),
-    crypto = require("crypto"),
-    userSchema = new mongoose.Schema({
-        email: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        name: {
-            type: String,
-            required: true
-        },
-        hash: String,
-        salt: String,
-        facebookId: String
-    });
+var mongoose = require("mongoose");
+var crypto = require("crypto");
+
+var userSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    hash: String,
+    salt: String,
+    facebookId: String
+});
 
 userSchema.methods.setPassword = function(password) {
     this.salt = crypto.randomBytes(16).toString("hex");
