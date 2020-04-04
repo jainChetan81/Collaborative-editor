@@ -84,9 +84,9 @@
 
 <script src="/plugins/ot/ot.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="https://rocky-depths-74216.herokuapp.com/peer/peer.js"></script>
-<!-- <script src="http://cdn.peerjs.com/0.3/peer.js"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
+<script src="https://hidden-reaches-83109.herokuapp.com/peer/peer.js"></script>
+<!-- <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script> -->
 
 <script>
     var EditorClient = ot.EditorClient;
@@ -168,13 +168,16 @@
     //  t9tfmg8kq39s5rk9
     //  lwjd5qra8257b9
     var peer = new Peer(username + roomId, {
-        host: "https://rocky-depths-74216.herokuapp.com/",
+        host: "hidden-reaches-83109.herokuapp.com",
         path: "/peerjs",
         port: 443,
         secure: true,
         debug: true,
         key: "code4startup",
     });
+    // var peer = new Peer(username + roomId, {
+    //     key: "lwjd5qra8257b9",
+    // });
 
     peer.on("open", function () {
         $("#my-id").text(peer.id);
